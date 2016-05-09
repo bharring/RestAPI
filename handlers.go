@@ -7,10 +7,27 @@ import (
 	"fmt"
 )
 
-
+func Auth(w http.ResponseWriter, r *http.Request) bool {
+	//Get the authorization header.
+	username, password, ok := r.BasicAuth()
+	if (ok) {
+		if (username != "admin" || password != "pass") {
+			sendJsonError(w, http.StatusForbidden)
+			return false
+		}
+	} else {
+		w.Header().Set("WWW-Authenticate", "Basic realm=\"user\"")
+		http.Error(w, http.StatusText(401), 401)
+		return false
+	}
+	return true
+}
 
 // Send basic usage statement (html encoding?)
 func Index(w http.ResponseWriter, r *http.Request) {
+	if (!Auth(w, r)) {
+		return
+	}
 	fmt.Fprintln(w, "Welcome to the REST Businesses API!")
 	fmt.Fprintln(w, "Usage:")
 	fmt.Fprintln(w, `GET /businesses?page={number}&size={number}
@@ -22,6 +39,9 @@ Fetch a specific business as a JSON object`)
 
 // sends JSON message of all/paginated businesses
 func BusinessesAll(w http.ResponseWriter, r *http.Request) {
+	if (!Auth(w, r)) {
+		return
+	}
 	var page, size int
 	var err error
 	// get and bounds check the page number
@@ -47,6 +67,10 @@ func BusinessesAll(w http.ResponseWriter, r *http.Request) {
 
 // sends JSON message of a specific business
 func BusinessById(w http.ResponseWriter, r *http.Request) {
+        if (!Auth(w, r)) {
+		return
+	}
+
 	var id int
 	var err error
 

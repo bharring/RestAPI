@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 )
 
-
 // Error structure to send on failure
 type jsonErr struct {
 	Code int    `json:"code"`
@@ -28,3 +27,4 @@ func sendJsonData(w http.ResponseWriter, data interface{}) {
 		panic(err)
 	}
 }
+
