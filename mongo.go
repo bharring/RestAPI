@@ -41,6 +41,9 @@ func dataStore() *DataStore {
 func c() *mgo.Collection {
 	return dataStore().session.DB(dbName).C(collection)
 }
+func a() *mgo.Collection {
+	return dataStore().session.DB(dbName).C("Authorization")
+}
 
 // structure and routines for constructing links
 type RequestAll struct {
@@ -122,4 +125,9 @@ func FindBusiness(id int) (*Business, error) {
 	err := c().Find(bson.M{"_id": id}).One(business) // stores result and optionally the error
 
 	return business, err
+}
+
+func TokenExist(id string) bool {
+	return (a().Find(bson.M{"token": id}).Count() > 0)
+
 }

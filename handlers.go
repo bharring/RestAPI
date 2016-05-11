@@ -9,9 +9,10 @@ import (
 
 func Auth(w http.ResponseWriter, r *http.Request) bool {
 	//Get the authorization header.
-	username, password, ok := r.BasicAuth()
+	_, password, ok := r.BasicAuth()
+
 	if (ok) {
-		if (username != "admin" || password != "pass") {
+		if (len(password == 0) || !TokenExist(password)) {
 			sendJsonError(w, http.StatusForbidden)
 			return false
 		}
